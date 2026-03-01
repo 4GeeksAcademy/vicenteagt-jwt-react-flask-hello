@@ -14,6 +14,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from api.models import User
 
 
 
@@ -79,3 +80,67 @@ def serve_any_other_file(path):
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     app.run(host='0.0.0.0', port=PORT, debug=True)
+
+#registrar usuario 
+
+@app.route('/register', methods = ['POST'])
+def register():
+#obtener el body
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify ({'msg': 'Necesitas llenar los campos'}), 400
+    if 'name' not in body:
+        return jsonify ({'msg': 'Necesitas agregar tu nombre completo'}), 400
+    if 'email' not in body:
+        return jsonify ({'msg': 'Necesitas agregar tu correo'}), 400
+    if 'password' not in body:
+        return jsonify ({'msg': 'Necesitas agregar una contraseña'}), 400
+    
+    new_user = User(
+        name=body['name'],
+        email=body['email'],
+        password=body['password']
+           
+        )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    token = create_access_token(identity=body['email'])
+
+    return jsonify ({'msg': 'registro exitoso', 'token': token}),200
+
+#loguearse
+
+@app.route('/login', methods=['POST'])
+def login():
+    body = request.get_json(silent=True)
+
+    if body is None:
+        return jsonify({'msg': 'Necesitas llenar los campos'}), 400
+    if 'email' not in body:
+        return jsonify({'msg': 'Necesitas agregar tu correo'}), 400
+    if 'password' not in body:
+        return jsonify({'msg': 'Necesitas agregar una contraseña'}), 400
+
+    user = User.query.filter_by(email=body['email']).first()
+
+    if user is None or user.password != body['password']:
+        return jsonify({'msg': 'Usuario o contraseña incorrecto'}), 401
+
+    token = create_access_token(identity=user.email)
+
+    return jsonify({
+        'msg': 'login exitoso','token': token}), 200
+
+#get privado
+
+@app.route('/private', methods=['GET'])
+@jwt_required()
+def private():
+    current_user = get_jwt_identity()
+
+    return jsonify({
+        'msg': 'Acceso permitido',
+        'user': current_user
+    }), 200

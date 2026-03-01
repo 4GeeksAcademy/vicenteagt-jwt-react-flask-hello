@@ -1,6 +1,10 @@
 export const initialStore=()=>{
   return{
+    token: localStorage.getItem("token") || null,
+    user: localStorage.getItem("user") || null,
     message: null,
+    token: null,
+    user: null,
     todos: [
       {
         id: 1,
@@ -32,7 +36,29 @@ export default function storeReducer(store, action = {}) {
         ...store,
         todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
       };
+
+    case "setAuth":
+      return {
+        ...store,
+        token: action.payload.token,
+        user: action.payload.user
+      };
+
+    case "logout":
+      return {
+        ...store,
+        token: null,
+        user: null
+      };
+
+    case "logout":
+      return {
+    ...store,
+    token: null,
+    user: null
+  };
+
     default:
-      throw Error('Unknown action.');
+      return store;
   }    
 }
