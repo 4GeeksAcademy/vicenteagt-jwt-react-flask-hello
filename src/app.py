@@ -15,6 +15,8 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 from api.models import User
+from flask_cors import CORS
+
 
 
 
@@ -50,12 +52,19 @@ app.register_blueprint(api, url_prefix='/api')
 # Handle/serialize errors like a JSON object
 
 #JWT
-app.config["JWT_SECRET_KEY"] = "os.getenv('JWT_SECRET_KEY')"
+
+CORS(app)
+
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
 jwt = JWTManager(app)
+
+
 
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
+
+
 
 # generate sitemap with all your endpoints
 
@@ -138,9 +147,11 @@ def login():
 @app.route('/private', methods=['GET'])
 @jwt_required()
 def private():
-    current_user = get_jwt_identity()
+    current_email = get_jwt_identity()
 
-    return jsonify({
-        'msg': 'Acceso permitido',
-        'user': current_user
-    }), 200
+    user = User.query.filter_by(email=current_email).first()
+
+    if user is None:
+        return jsonify({'msg': 'Usuario no encontrado'}), 404
+
+    return jsonify({'msg': 'Acceso exitoso'}), 200

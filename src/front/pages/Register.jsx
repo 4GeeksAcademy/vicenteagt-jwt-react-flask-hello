@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
@@ -7,60 +7,124 @@ export const Register = () => {
   const { dispatch } = useGlobalReducer();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: ""
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/register`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
-      }
-    );
+  const [shouldSubmit, setShouldSubmit] = useState(false);
 
-    const data = await response.json();
+  //logica fetch
+  useEffect(() => {
 
-    if (response.ok) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", data.name);
-      dispatch({
-        type: "setAuth",
-        payload: {
-          token: data.token,
-          user: data.name
+    if (!shouldSubmit) return;
+
+    const registerUser = async () => {
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+          })
         }
-      });
+      );
 
-      navigate("/private");
-    } else {
-      alert(data.msg);
-    }
+      const data = await response.json();
+
+      if (response.ok) {
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", data.name);
+
+        dispatch({
+          type: "setAuth",
+          payload: {
+            token: data.token,
+            user: data.name
+          }
+        });
+
+        navigate("/private");
+
+      } else {
+        alert(data.msg);
+      }
+
+      setShouldSubmit(false);
+    };
+
+    registerUser();
+
+  }, [shouldSubmit]);
+
+ 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setShouldSubmit(true);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Nombre Completo"
-        onChange={e => setForm({...form, name: e.target.value})}
-      />
-      <input
-        placeholder="Email"
-        onChange={e => setForm({...form, email: e.target.value})}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={e => setForm({...form, password: e.target.value})}
-      />
-      <button type="submit">Registrarse</button>
-    </form>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+
+          <div className="card shadow p-4">
+
+            <h2 className="text-center mb-4">Registrarse</h2>
+
+            <form onSubmit={handleSubmit}>
+
+              <div className="mb-3">
+                <label className="form-label">Nombre Completo</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+              >
+                Registrarse
+              </button>
+
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
   );
 };
-
