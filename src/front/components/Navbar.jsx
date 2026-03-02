@@ -15,23 +15,23 @@ export const Navbar = () => {
 };
 
   return (
-    <nav style={{ display: "flex", justifyContent: "space-between", padding: "1rem", background: "#eee" }}>
+    <nav className="bg-warning" style={{ display: "flex", justifyContent: "space-between", padding: "1rem" }}>
       
-      <h3 style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
-        Mi App
-      </h3>
+      <h2 className="text-dark" style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+        ESLO
+      </h2>
 
       {!store.token ? (
        
         <div>
-          <button
+          <button className="btn btn-dark"
             onClick={() => navigate("/register")}
             style={{ marginRight: "10px" }}
           >
             Registrarse
           </button>
 
-          <button
+          <button className="btn btn-dark"
             onClick={() => navigate("/login")}
           >
             Acceder
@@ -39,7 +39,7 @@ export const Navbar = () => {
         </div>
       ) : (
         
-        <button onClick={handleLogout}>
+        <button className="btn btn-danger" onClick={handleLogout}>
           Salir
         </button>
       )}

@@ -69,8 +69,9 @@ export const Register = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
+    
+    <div className="container-fluid bg-dark py-5">
+      <div className="row justify-content-center ">
         <div className="col-md-6">
 
           <div className="card shadow p-4">
@@ -83,6 +84,7 @@ export const Register = () => {
                 <label className="form-label">Nombre Completo</label>
                 <input
                   type="text"
+                  placeholder="Nombre completo"
                   className="form-control"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -94,6 +96,7 @@ export const Register = () => {
                 <label className="form-label">Email</label>
                 <input
                   type="email"
+                  placeholder="Dirección email"
                   className="form-control"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -102,9 +105,10 @@ export const Register = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Password</label>
+                <label className="form-label">Contraseña</label>
                 <input
                   type="password"
+                  placeholder="contraseña"
                   className="form-control"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -114,7 +118,7 @@ export const Register = () => {
 
               <button
                 type="submit"
-                className="btn btn-primary w-100"
+                className="btn btn-warning w-100"
               >
                 Registrarse
               </button>
