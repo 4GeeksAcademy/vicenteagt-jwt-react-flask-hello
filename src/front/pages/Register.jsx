@@ -108,7 +108,7 @@ export const Register = () => {
                 <label className="form-label">Contraseña</label>
                 <input
                   type="password"
-                  placeholder="contraseña"
+                  placeholder="Contraseña"
                   className="form-control"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

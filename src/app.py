@@ -90,11 +90,11 @@ if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     app.run(host='0.0.0.0', port=PORT, debug=True)
 
-#registrar usuario 
+#registrar 
 
 @app.route('/register', methods = ['POST'])
 def register():
-#obtener el body
+
     body = request.get_json(silent=True)
     if body is None:
         return jsonify ({'msg': 'Necesitas llenar los campos'}), 400
@@ -154,4 +154,7 @@ def private():
     if user is None:
         return jsonify({'msg': 'Usuario no encontrado'}), 404
 
-    return jsonify({'msg': 'Acceso exitoso'}), 200
+    return jsonify({
+        "name": user.name,
+        "email": user.email
+    }), 200
